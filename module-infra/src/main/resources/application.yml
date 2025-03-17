@@ -1,0 +1,25 @@
+spring:
+  application.name: module-infra
+  sql:
+    init:
+      platform: mysql
+      mode: always
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/theater
+    username: theater-admin
+    password: helloworld
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+
+

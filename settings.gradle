@@ -1,0 +1,5 @@
+rootProject.name = 'theater-service'
+
+include 'module-api'
+include 'module-domain'
+include 'module-infra'
