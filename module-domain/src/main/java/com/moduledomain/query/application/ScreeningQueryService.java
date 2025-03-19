@@ -14,6 +14,6 @@ public class ScreeningQueryService {
     private final ScreeningQueryRepository screeningQueryRepository;
 
     public List<ScreeningInfo> getActiveScreenings() {
-        return screeningQueryRepository.getAllByMovieReleaseAtDesc();
+        return screeningQueryRepository.fetchByMovieReleaseAtDesc();
     }
 }

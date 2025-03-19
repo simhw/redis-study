@@ -26,7 +26,7 @@ public class ScreeningQueryRepositoryImpl implements ScreeningQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ScreeningInfo> getAllByMovieReleaseAtDesc() {
+    public List<ScreeningInfo> fetchByMovieReleaseAtDesc() {
         QScreeningJpaEntity screening = screeningJpaEntity;
         QMovieJpaEntity movie = movieJpaEntity;
         QTheaterJpaEntity theater = theaterJpaEntity;

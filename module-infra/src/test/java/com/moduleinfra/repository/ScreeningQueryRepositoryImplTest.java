@@ -2,7 +2,6 @@ package com.moduleinfra.repository;
 
 
 import com.moduledomain.query.dto.ScreeningInfo;
-import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,8 @@ class ScreeningQueryRepositoryImplTest {
     ScreeningQueryRepositoryImpl repository;
 
     @Test
-    void getAllByMovieReleaseAtDesc() {
-        List<ScreeningInfo> summaries = repository.getAllByMovieReleaseAtDesc();
+    void fetchByMovieReleaseAtDesc() {
+        List<ScreeningInfo> summaries = repository.fetchByMovieReleaseAtDesc();
         Assertions.assertThat(summaries).isNotEmpty();
     }
 }
