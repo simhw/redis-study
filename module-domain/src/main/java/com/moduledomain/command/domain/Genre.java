@@ -1,5 +1,11 @@
 package com.moduledomain.command.domain;
 
 public enum Genre {
-    SF, COMEDY, ACTION, MUSICAL, HISTORY
+    SF,
+    COMEDY,
+    ACTION,
+    MUSICAL,
+    HISTORY,
+    ROMANCE,
+    HORROR
 }

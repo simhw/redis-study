@@ -11,8 +11,8 @@ create table movie
     created_at datetime(6),
     updated_at datetime(6),
     deleted_at datetime(6),
-    created_ay bigint unsigned not null,
-    updated_by bigint unsigned not null,
+    created_by bigint unsigned,
+    updated_by bigint unsigned,
     primary key (movie_id)
 );
 
@@ -27,8 +27,8 @@ create table screening
     created_at   datetime(6),
     updated_at   datetime(6),
     deleted_at   datetime(6),
-    created_ay   bigint unsigned not null,
-    updated_by   bigint unsigned not null,
+    created_by   bigint unsigned,
+    updated_by   bigint unsigned,
     primary key (screening_id)
 );
 
@@ -40,8 +40,8 @@ create table theater
     created_at datetime(6),
     updated_at datetime(6),
     deleted_at datetime(6),
-    created_ay bigint unsigned not null,
-    updated_by bigint unsigned not null,
+    created_by bigint unsigned,
+    updated_by bigint unsigned,
     primary key (theater_id)
 );
 
@@ -54,8 +54,8 @@ create table seat
     created_at datetime(6),
     updated_at datetime(6),
     deleted_at datetime(6),
-    created_ay bigint unsigned not null,
-    updated_by bigint unsigned not null,
+    created_by bigint unsigned,
+    updated_by bigint unsigned,
     primary key (seat_id)
 );
 
@@ -69,8 +69,8 @@ create table reservation
     created_at     datetime(6),
     updated_at     datetime(6),
     deleted_at     datetime(6),
-    created_ay     bigint unsigned not null,
-    updated_by     bigint unsigned not null,
+    created_by     bigint unsigned,
+    updated_by     bigint unsigned,
     primary key (reservation_id)
 );
 
@@ -82,8 +82,8 @@ create table user
     created_at datetime(6),
     updated_at datetime(6),
     deleted_at datetime(6),
-    created_ay bigint unsigned not null,
-    updated_by bigint unsigned not null,
+    created_by bigint unsigned,
+    updated_by bigint unsigned,
     primary key (user_id)
 );
 
