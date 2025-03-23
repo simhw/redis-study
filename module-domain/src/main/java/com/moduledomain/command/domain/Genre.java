@@ -7,5 +7,13 @@ public enum Genre {
     MUSICAL,
     HISTORY,
     ROMANCE,
-    HORROR
+    HORROR;
+
+    public static Genre from(String value) {
+        try {
+            return Genre.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }

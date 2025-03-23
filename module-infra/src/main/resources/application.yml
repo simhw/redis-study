@@ -1,5 +1,6 @@
 spring:
-  application.name: module-infra
+  application:
+    name: module-infra
   sql:
     init:
       platform: mysql
@@ -13,13 +14,11 @@ spring:
         format_sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/theater
-    username: theater-admin
-    password: helloworld
+    url: jdbc:mysql://localhost:3307/theater
+    username: user
+    password: password
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
-
-

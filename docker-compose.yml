@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root-password
+      - MYSQL_USER=user
+      - MYSQL_DATABASE=theater
+      - MYSQL_PASSWORD=password
+      - TZ=Asia/Seoul
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

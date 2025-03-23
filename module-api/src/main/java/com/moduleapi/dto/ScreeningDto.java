@@ -1,6 +1,5 @@
 package com.moduleapi.dto;
 
-import com.moduledomain.command.domain.Screening;
 import com.moduledomain.query.dto.ScreeningInfo;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,5 +13,13 @@ public class ScreeningDto {
         private Long id;
         private LocalDateTime startAt;
         private LocalDateTime endAt;
+
+        public static ScreeningDto.V1 from(ScreeningInfo screening) {
+            return ScreeningDto.V1.builder()
+                    .id(screening.getId())
+                    .startAt(screening.getStartAt())
+                    .endAt(screening.getEndAt())
+                    .build();
+        }
     }
 }
