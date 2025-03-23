@@ -1,5 +1,7 @@
 package com.moduledomain.command.domain;
 
+import org.springframework.util.StringUtils;
+
 public enum Genre {
     SF,
     COMEDY,
@@ -11,7 +13,10 @@ public enum Genre {
 
     public static Genre from(String value) {
         try {
-            return Genre.valueOf(value.toUpperCase());
+            if (StringUtils.hasText(value)) {
+                return Genre.valueOf(value.toUpperCase());
+            }
+            return null;
         } catch (IllegalArgumentException e) {
             return null;
         }
