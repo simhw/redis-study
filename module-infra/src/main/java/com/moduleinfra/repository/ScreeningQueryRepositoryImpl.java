@@ -10,6 +10,7 @@ import com.querydsl.core.types.Projections;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class ScreeningQueryRepositoryImpl implements ScreeningQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    @Cacheable(cacheNames = "movies", cacheManager = "globalCacheManager",
+            key = "'movies:' + #criteria.genre + ':' + #criteria.title")
     public List<ScreeningInfo> fetchActiveScreenings(FetchMovieCriteria criteria) {
         QScreeningJpaEntity screening = screeningJpaEntity;
         QMovieJpaEntity movie = movieJpaEntity;

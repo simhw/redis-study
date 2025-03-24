@@ -11,9 +11,15 @@ services:
       - MYSQL_DATABASE=theater
       - MYSQL_PASSWORD=password
       - TZ=Asia/Seoul
-
     volumes:
       - mysql-data:/var/lib/mysql
+  redis:
+    image: redis:7.4.2-alpine
+    container_name: simple-redis
+    ports:
+      - "6379:6379"
+    command: [ "redis-server" ]
 
 volumes:
   mysql-data:
+
