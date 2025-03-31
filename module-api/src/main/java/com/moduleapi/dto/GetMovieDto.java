@@ -1,6 +1,6 @@
 package com.moduleapi.dto;
 
-import com.moduledomain.command.domain.Genre;
+import com.moduledomain.command.domain.screnning.Genre;
 import com.moduledomain.query.dto.FetchMovieCriteria;
 import jakarta.validation.constraints.Size;
 import lombok.*;

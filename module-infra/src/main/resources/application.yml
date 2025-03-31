@@ -4,7 +4,7 @@ spring:
   sql:
     init:
       platform: mysql
-      mode: always
+#      mode: always
   jpa:
     generate-ddl: true
     hibernate:

@@ -32,6 +32,16 @@ create table screening
     primary key (screening_id)
 );
 
+drop table if exists `allocated_seat`;
+create table allocated_seat
+(
+    allocated_seat_id bigint unsigned not null auto_increment,
+    seat_id           bigint unsigned not null,
+    screening         bigint unsigned not null,
+    primary key (allocated_seat_id)
+);
+
+
 drop table if exists `theater`;
 create table theater
 (
@@ -65,7 +75,6 @@ create table reservation
     reservation_id bigint unsigned not null auto_increment,
     user_id        bigint          not null,
     screening_id   bigint          not null,
-    seat_id        bigint          not null,
     created_at     datetime(6),
     updated_at     datetime(6),
     deleted_at     datetime(6),
@@ -73,6 +82,14 @@ create table reservation
     updated_by     bigint unsigned,
     primary key (reservation_id)
 );
+
+drop table if exists `reserved_seat`;
+create table reserved_seat
+(
+    reservation_id bigint unsigned not null,
+    allocated_id   bigint unsigned not null
+);
+
 
 drop table if exists `user`;
 create table user
@@ -86,4 +103,3 @@ create table user
     updated_by bigint unsigned,
     primary key (user_id)
 );
-

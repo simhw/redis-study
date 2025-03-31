@@ -1,8 +1,8 @@
 package com.moduledomain.query.dto;
 
 
-import com.moduledomain.command.domain.Genre;
-import com.moduledomain.command.domain.Rating;
+import com.moduledomain.command.domain.screnning.Genre;
+import com.moduledomain.command.domain.screnning.Rating;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

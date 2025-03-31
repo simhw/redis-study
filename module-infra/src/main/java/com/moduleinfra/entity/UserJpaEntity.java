@@ -2,12 +2,14 @@ package com.moduleinfra.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "user")
 @AllArgsConstructor
+@Getter
 public class UserJpaEntity extends BaseJpaEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -15,7 +17,10 @@ public class UserJpaEntity extends BaseJpaEntity {
     private Long id;
     private String username;
 
-    protected UserJpaEntity() {
+    public UserJpaEntity() {
+    }
 
+    public UserJpaEntity(String username) {
+        this.username = username;
     }
 }

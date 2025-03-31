@@ -1,6 +1,6 @@
 package com.moduledomain.query.dto;
 
-import com.moduledomain.command.domain.Genre;
+import com.moduledomain.command.domain.screnning.Genre;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
