@@ -24,8 +24,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     @Transactional
-    public void saveReservation(Reservation reservation) {
+    public Long saveReservation(Reservation reservation) {
         ReservationJpaEntity reservationEntity = reservationMapper.toReservationEntity(reservation);
         reservationJpaRepository.save(reservationEntity);
+        return reservationEntity.getId();
     }
 }

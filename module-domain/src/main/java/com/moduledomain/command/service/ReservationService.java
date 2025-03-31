@@ -3,6 +3,7 @@ package com.moduledomain.command.service;
 import com.moduledomain.command.domain.reservation.Reservation;
 import com.moduledomain.command.domain.reservation.ReservationRepository;
 
+import com.moduledomain.command.domain.reservation.ReservedEvent;
 import com.moduledomain.command.domain.reservation.ReservedSeat;
 import com.moduledomain.command.domain.screnning.AllocatedSeat;
 import com.moduledomain.command.domain.screnning.Screening;
@@ -13,6 +14,7 @@ import com.moduledomain.command.domain.theater.SeatRepository;
 import com.moduledomain.command.domain.user.User;
 import com.moduledomain.command.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,23 +36,26 @@ public class ReservationService {
     private final ScreeningRepository screeningRepository;
     private final SeatRepository seatRepository;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     @Transactional
     public void reserve(ReservationCommand command) {
+        Screening screening = screeningRepository.getScreeningBy(command.getScreeningId());
+
         // 예약 객체 생성
         Reservation reservation = new Reservation(
                 command.getUserId(),
                 command.getScreeningId(),
                 command.getAllocatedSeatIds().stream()
                         .map(ReservedSeat::new)
-                        .toList()
+                        .toList(),
+                screening.getPrice()
         );
+        // 아직 시작하지 않은 상영인지 확인
+        screening.verifyIsNotYetStart();
 
         // 존재하는 회원인지 확인
         User user = userRepository.getUserBy(command.getUserId());
-
-        // 아직 시작하지 않은 상영인지 확인
-        Screening screening = screeningRepository.getScreeningBy(command.getScreeningId());
-        screening.verifyIsNotYetStart();
 
         // 예약되지 않은 좌석인지 확인
         List<AllocatedSeat> allocatedSeats = screeningRepository.getAllocatedSeatsBy(command.getAllocatedSeatIds());
@@ -66,9 +71,11 @@ public class ReservationService {
         // AllocatedSeat의 상태를 예약됨으로 변경
         allocatedSeats.forEach(AllocatedSeat::reserve);
         screeningRepository.saveAllocatedSeats(allocatedSeats);
-        reservationRepository.saveReservation(reservation);
-    }
+        Long id = reservationRepository.saveReservation(reservation);
 
+        // 예약 완료 메시지 전송 이벤트 발행
+        eventPublisher.publishEvent(new ReservedEvent(id));
+    }
 
     /**
      * 예약된 좌석인지 확인

@@ -20,11 +20,12 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(Long userId, Long screeningId, List<ReservedSeat> reservedSeats) {
+    public Reservation(Long userId, Long screeningId, List<ReservedSeat> reservedSeats, int price) {
         this.userId = userId;
         this.screeningId = screeningId;
         this.status = ReservationStatus.RESERVED;
         setReservedSeats(reservedSeats);
+        this.totalAmount = calculateTotalAmount(reservedSeats.size(), price);
     }
 
     private void setReservedSeats(List<ReservedSeat> reservedSeats) {

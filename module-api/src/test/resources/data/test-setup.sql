@@ -31,8 +31,8 @@ values (1, 'Dark Knight Rises, The', 'http://dummyimage.com/235x100.png/ff4444/f
         '2025-03-12', '2025-02-12', null, null, null, null);
 
 -- 상영
-insert into screening (screening_id, movie_id, start_at, end_at, theater_id, created_at)
-values (1, 1, date_add(now(), interval 1 hour), date_add(now(), interval 3 hour), 1, '2025-03-01 00:00:00');
+insert into screening (screening_id, movie_id, price, start_at, end_at, theater_id, created_at)
+values (1, 1, 15000, date_add(now(), interval 1 hour), date_add(now(), interval 3 hour), 1, '2025-03-01 00:00:00');
 
 -- 상영 좌석
 insert into allocated_seat(allocated_seat_id, reserved, seat_id, screening_id)

@@ -21,6 +21,7 @@ create table screening
 (
     screening_id bigint unsigned not null auto_increment,
     movie_id     bigint          not null,
+    price        int,
     start_at     datetime(6),
     end_at       datetime(6),
     theater_id   bigint          not null,
