@@ -45,13 +45,19 @@ erDiagram
 
     SCREENING {
         bigint screening_id PK "AUTO_INCREMENT, 상영 ID"
-        bigint movie_id FK "영화 ID)"
+        bigint movie_id FK "영화 ID"
         datetime(6) start_at "상영 시작 시간"
         datetime(6) end_at "상영 종료 시간"
         bigint theater_id FK "상영관 ID"
         datetime(6) created_at "생성일"
         datetime(6) updated_at "수정일"
         datetime(6) deleted_at "삭제일"
+    }
+
+    ALLOCATED_SEAT {
+        bigint allocated_id PK "AUTO_INCREMENT, 상영 좌석 ID"
+        bigint screening_id FK "상영 ID"
+        bigint seat_id FK "좌석 ID"
     }
 
     THEATER {
@@ -64,7 +70,8 @@ erDiagram
 
     SEAT {
         bigint seat_id PK "AUTO_INCREMENT, 좌석 ID"
-        varchar(255) number "좌석 번호"
+        varchar(2) row "좌석 행"
+        int number "좌석 번호"
         bigint theater_id FK "극장 ID"
         datetime(6) created_at "생성일"
         datetime(6) updated_at "수정일"
@@ -75,10 +82,14 @@ erDiagram
         bigint reservation_id PK "AUTO_INCREMENT, 예약 ID"
         bigint user_id FK "사용자 ID"
         bigint screening_id FK "상영 ID"
-        bigint seat_id FK "좌석 ID"
         datetime(6) created_at "생성일"
         datetime(6) updated_at "수정일"
         datetime(6) deleted_at "삭제일"
+    }
+
+    RESERVED_SEAT {
+        bigint reservation_id FK "예약 ID"
+        bigint allocated_id FK "상영 좌석 ID"
     }
 
     USER {
@@ -90,9 +101,12 @@ erDiagram
     }
 
     MOVIE ||--o{ SCREENING: "has"
-    THEATER ||--o{ SCREENING: "has"
     THEATER ||--|{ SEAT: "has"
+    SCREENING ||--o{ ALLOCATED_SEAT: "allocated"
+    ALLOCATED_SEAT ||--|| SEAT: "has"
     SCREENING ||--o{ RESERVATION: "has"
-    SEAT ||-- || RESERVATION: "has"
+    RESERVATION ||--o{ RESERVED_SEAT: "has"
+    ALLOCATED_SEAT ||--o{ RESERVED_SEAT: "reserved"
     USER ||--o{ RESERVATION: "makes"
+
 ```
