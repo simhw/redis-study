@@ -39,6 +39,15 @@ public class ScreeningRepositoryImpl implements ScreeningRepository {
     }
 
     @Override
+    public List<AllocatedSeat> getAllocatedSeatsWithPessimisticLock(List<Long> allocatedSeatIds) {
+        List<AllocatedSeat> allocatedSeats = new ArrayList<>();
+        allocatedSeatJpaRepository.findAllByIdWithPessimisticLock(allocatedSeatIds).iterator().forEachRemaining(allocatedSeatJpaEntity -> {
+            allocatedSeats.add(allocatedSeatMapper.toAllocatedSeat(allocatedSeatJpaEntity));
+        });
+        return allocatedSeats;
+    }
+
+    @Override
     @Transactional
     public void saveAllocatedSeats(List<AllocatedSeat> allocatedSeats) {
         List<AllocatedSeatJpaEntity> allocatedSeatEntities = allocatedSeats.stream()

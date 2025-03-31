@@ -4,15 +4,22 @@ import com.moduleapi.dto.CreateReservationDto;
 import com.moduledomain.command.domain.reservation.Reservation;
 import com.moduledomain.command.domain.screnning.*;
 
+import com.moduleinfra.repository.reservation.ReservationJpaRepository;
 import com.moduleinfra.repository.reservation.ReservationRepositoryImpl;
 import com.moduleinfra.repository.screening.ScreeningRepositoryImpl;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.util.StopWatch;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootTest
 @Sql(scripts = "/data/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -29,7 +36,7 @@ class ReservationControllerTest {
     ScreeningRepositoryImpl screeningRepository;
 
     @Test
-    void create() {
+    void 영화_예매_성공() {
         // given
         Long userId = 1L;
         List<Long> allocatedSeatIds = List.of(1L, 2L, 3L, 4L, 5L);
@@ -46,5 +53,47 @@ class ReservationControllerTest {
         allocatedSeats.forEach(allocatedSeat -> {
             Assertions.assertThat(allocatedSeat.isReserved()).isTrue();
         });
+    }
+
+    @Test
+    @DisplayName("회원 10명이 동시에 같은 좌석을 예매하는 경우 하나의 예약만 생성된다")
+    void 영화_예매_동시성_테스트() throws InterruptedException {
+        // given
+        ExecutorService es = Executors.newFixedThreadPool(10);
+        CountDownLatch countDownLatch = new CountDownLatch(10);
+        AtomicInteger success = new AtomicInteger(0);
+
+        List<Long> allocatedSeatIds = List.of(1L, 2L, 3L, 4L, 5L);
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        for (long i = 1; i <= 10; i++) {
+            Long userId = i;
+
+            es.submit(() -> {
+                try {
+                    CreateReservationDto.Request request = new CreateReservationDto.Request(1L, allocatedSeatIds);
+                    reservationController.create(userId, request);
+                    success.incrementAndGet();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+
+        countDownLatch.await();
+        es.shutdown();
+        stopWatch.stop();
+
+        System.out.println("소요시간: " + stopWatch.getTotalTimeMillis() + "ms");
+        System.out.println(stopWatch.prettyPrint());
+
+        List<Reservation> reservations = reservationRepository.getReservationsByScreeningId(1L);
+        Assertions.assertThat(reservations).isNotNull();
+        Assertions.assertThat(reservations.size()).isEqualTo(1);
     }
 }

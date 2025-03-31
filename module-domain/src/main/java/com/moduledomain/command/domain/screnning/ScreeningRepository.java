@@ -7,6 +7,8 @@ public interface ScreeningRepository {
 
     public List<AllocatedSeat> getAllocatedSeatsBy(List<Long> allocatedSeatIds);
 
+    public List<AllocatedSeat> getAllocatedSeatsWithPessimisticLock(List<Long> allocatedSeatIds);
+
     public void saveAllocatedSeats(List<AllocatedSeat> allocatedSeats);
 }
 

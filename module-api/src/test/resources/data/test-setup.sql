@@ -62,4 +62,18 @@ values (1, 'user1');
 insert into user (user_id, username)
 values (2, 'user2');
 insert into user (user_id, username)
-values (3, 'user2');
+values (3, 'user3');
+insert into user (user_id, username)
+values (4, 'user4');
+insert into user (user_id, username)
+values (5, 'user5');
+insert into user (user_id, username)
+values (6, 'user6');
+insert into user (user_id, username)
+values (7, 'user7');
+insert into user (user_id, username)
+values (8, 'user8');
+insert into user (user_id, username)
+values (9, 'user9');
+insert into user (user_id, username)
+values (10, 'user10');

@@ -58,7 +58,7 @@ public class ReservationService {
         User user = userRepository.getUserBy(command.getUserId());
 
         // 예약되지 않은 좌석인지 확인
-        List<AllocatedSeat> allocatedSeats = screeningRepository.getAllocatedSeatsBy(command.getAllocatedSeatIds());
+        List<AllocatedSeat> allocatedSeats = screeningRepository.getAllocatedSeatsWithPessimisticLock(command.getAllocatedSeatIds());
         validateIsNotYetReservedSeat(allocatedSeats);
 
         // 연속된 좌석 형태인지 확인
