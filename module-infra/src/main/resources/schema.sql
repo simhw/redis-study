@@ -38,10 +38,11 @@ create table allocated_seat
 (
     allocated_seat_id bigint unsigned not null auto_increment,
     seat_id           bigint unsigned not null,
-    screening         bigint unsigned not null,
+    screening_id      bigint unsigned not null,
+    reserved          boolean         not null,
+    version           INT             not null default 0,
     primary key (allocated_seat_id)
 );
-
 
 drop table if exists `theater`;
 create table theater

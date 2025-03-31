@@ -4,7 +4,7 @@ spring:
   sql:
     init:
       platform: mysql
-#      mode: always
+      mode: embedded  # schema.sql 실행 활성화
   jpa:
     generate-ddl: true
     hibernate:

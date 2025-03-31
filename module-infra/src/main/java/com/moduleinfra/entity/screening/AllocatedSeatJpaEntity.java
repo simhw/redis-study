@@ -3,6 +3,7 @@ package com.moduleinfra.entity.screening;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
@@ -14,9 +15,9 @@ public class AllocatedSeatJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long seatId;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "screening_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-//    private ScreeningJpaEntity screening;
+    @Version
+    @ColumnDefault("0")
+    private Integer version;
     private Long screeningId;
     private Boolean reserved;
 
