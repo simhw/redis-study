@@ -1,6 +1,5 @@
 package com.moduledomain.command.service;
 
-import com.moduledomain.command.DistributedLock;
 import com.moduledomain.command.domain.reservation.Reservation;
 import com.moduledomain.command.domain.reservation.ReservationRepository;
 
@@ -17,6 +16,7 @@ import com.moduledomain.command.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,45 +38,59 @@ public class ReservationService {
     private final SeatRepository seatRepository;
 
     private final ApplicationEventPublisher eventPublisher;
+    private final DistributedLock distributedLock;
+    private final TransactionTemplate transactionTemplate;
 
-    @DistributedLock(keys = "#command.getAllocatedSeatIds()", leaseTime = 3, waitTime = 10)
     public void reserve(ReservationCommand command) {
-        Screening screening = screeningRepository.getScreeningBy(command.getScreeningId());
+        String[] keys = command.getAllocatedSeatIds().stream()
+                .map(String::valueOf)
+                .toArray(String[]::new);
 
-        // 예약 객체 생성
-        Reservation reservation = new Reservation(
-                command.getUserId(),
-                command.getScreeningId(),
-                command.getAllocatedSeatIds().stream()
-                        .map(ReservedSeat::new)
-                        .toList(),
-                screening.getPrice()
-        );
+        // 분산락 획득
+        distributedLock.lockAndExecute(keys, 2, 3, TimeUnit.SECONDS, () -> {
+            // 예약 비즈니스 로직 실행
+            transactionTemplate.execute(status -> {
+                Screening screening = screeningRepository.getScreeningBy(command.getScreeningId());
 
-        // 아직 시작하지 않은 상영인지 확인
-        screening.verifyIsNotYetStart();
+                // 예약 객체 생성
+                Reservation reservation = new Reservation(
+                        command.getUserId(),
+                        command.getScreeningId(),
+                        command.getAllocatedSeatIds().stream()
+                                .map(ReservedSeat::new)
+                                .toList(),
+                        screening.getPrice()
+                );
 
-        // 존재하는 회원인지 확인
-        User user = userRepository.getUserBy(command.getUserId());
+                // 아직 시작하지 않은 상영인지 확인
+                screening.verifyIsNotYetStart();
 
-        // 예약되지 않은 좌석인지 확인
-        List<AllocatedSeat> allocatedSeats = screeningRepository.getAllocatedSeatsBy(command.getAllocatedSeatIds());
-        validateIsNotYetReservedSeat(allocatedSeats);
+                // 존재하는 회원인지 확인
+                User user = userRepository.getUserBy(command.getUserId());
 
-        // 연속된 좌석 형태인지 확인
-        List<Long> seatIds = allocatedSeats.stream()
-                .map(AllocatedSeat::getSeatId)
-                .toList();
-        List<Seat> seats = seatRepository.getAllSeatBy(seatIds);
-        validateSeatsNextToEachOther(seats);
+                // 예약되지 않은 좌석인지 확인
+                List<AllocatedSeat> allocatedSeats = screeningRepository.getAllocatedSeatsBy(command.getAllocatedSeatIds());
+                validateIsNotYetReservedSeat(allocatedSeats);
 
-        // AllocatedSeat의 상태를 예약됨으로 변경
-        allocatedSeats.forEach(AllocatedSeat::reserve);
-        screeningRepository.saveAllocatedSeats(allocatedSeats);
-        Long id = reservationRepository.saveReservation(reservation);
+                // 연속된 좌석 형태인지 확인
+                List<Long> seatIds = allocatedSeats.stream()
+                        .map(AllocatedSeat::getSeatId)
+                        .toList();
+                List<Seat> seats = seatRepository.getAllSeatBy(seatIds);
+                validateSeatsNextToEachOther(seats);
 
-        // 예약 완료 메시지 전송 이벤트 발행
-        eventPublisher.publishEvent(new ReservedEvent(id));
+                // AllocatedSeat의 상태를 예약됨으로 변경
+                allocatedSeats.forEach(AllocatedSeat::reserve);
+                screeningRepository.saveAllocatedSeats(allocatedSeats);
+                Long id = reservationRepository.saveReservation(reservation);
+
+                // 예약 완료 메시지 전송 이벤트 발행
+                eventPublisher.publishEvent(new ReservedEvent(id));
+                return id;
+            });
+
+            return null;
+        });
     }
 
     /**

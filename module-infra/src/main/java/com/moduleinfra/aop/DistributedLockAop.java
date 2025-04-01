@@ -1,6 +1,5 @@
 package com.moduleinfra.aop;
 
-import com.moduledomain.command.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -25,12 +24,12 @@ public class DistributedLockAop {
     private final RedissonClient redissonClient;
     private final AopForTransaction aopForTransaction;
 
-    @Around("@annotation(com.moduledomain.command.DistributedLock)")
+    @Around("@annotation(com.moduledomain.command.service.DistributedLockAop)")
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
-        String[] keys = distributedLock.keys();
+        com.moduledomain.command.service.DistributedLockAop distributedLockAop = method.getAnnotation(com.moduledomain.command.service.DistributedLockAop.class);
+        String[] keys = distributedLockAop.keys();
 
         List<RLock> locks = Arrays.stream(keys)
                 .map(key -> REDISSON_LOCK_PREFIX + CustomSpringELParser.getDynamicValue(
@@ -44,7 +43,7 @@ public class DistributedLockAop {
         RLock multiLock = redissonClient.getMultiLock(locks.toArray(new RLock[0]));
 
         try {
-            boolean locked = multiLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit());
+            boolean locked = multiLock.tryLock(distributedLockAop.waitTime(), distributedLockAop.leaseTime(), distributedLockAop.timeUnit());
             if (!locked) {
                 log.warn("Failed to acquire lock for keys: {}", Arrays.toString(keys));
                 return false;  // 락 획득 실패 처리
