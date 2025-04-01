@@ -4,7 +4,6 @@ import com.moduleapi.dto.CreateReservationDto;
 import com.moduledomain.command.domain.reservation.Reservation;
 import com.moduledomain.command.domain.screnning.*;
 
-import com.moduleinfra.repository.reservation.ReservationJpaRepository;
 import com.moduleinfra.repository.reservation.ReservationRepositoryImpl;
 import com.moduleinfra.repository.screening.ScreeningRepositoryImpl;
 import org.assertj.core.api.Assertions;
@@ -56,11 +55,13 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("회원 10명이 동시에 같은 좌석을 예매하는 경우 하나의 예약만 생성된다")
+    @DisplayName("회원 50명이 동시에 같은 좌석을 예매하는 경우 하나의 예약만 생성된다")
     void 영화_예매_동시성_테스트() throws InterruptedException {
+        int THREAD_COUNT = 50;
+
         // given
-        ExecutorService es = Executors.newFixedThreadPool(10);
-        CountDownLatch countDownLatch = new CountDownLatch(10);
+        ExecutorService es = Executors.newFixedThreadPool(THREAD_COUNT);
+        CountDownLatch countDownLatch = new CountDownLatch(THREAD_COUNT);
         AtomicInteger success = new AtomicInteger(0);
 
         List<Long> allocatedSeatIds = List.of(1L, 2L, 3L, 4L, 5L);
@@ -68,7 +69,7 @@ class ReservationControllerTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        for (long i = 1; i <= 10; i++) {
+        for (long i = 1; i <= THREAD_COUNT; i++) {
             Long userId = i;
 
             es.submit(() -> {

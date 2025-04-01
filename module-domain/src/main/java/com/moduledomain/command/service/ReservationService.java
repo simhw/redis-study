@@ -1,5 +1,6 @@
 package com.moduledomain.command.service;
 
+import com.moduledomain.command.DistributedLock;
 import com.moduledomain.command.domain.reservation.Reservation;
 import com.moduledomain.command.domain.reservation.ReservationRepository;
 
@@ -16,9 +17,9 @@ import com.moduledomain.command.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * theater(seat)
@@ -38,7 +39,7 @@ public class ReservationService {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional
+    @DistributedLock(keys = "#command.getAllocatedSeatIds()", leaseTime = 3, waitTime = 10)
     public void reserve(ReservationCommand command) {
         Screening screening = screeningRepository.getScreeningBy(command.getScreeningId());
 

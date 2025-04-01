@@ -15,7 +15,7 @@ public class ReservationController {
 
     @PostMapping
     public String create(
-            @CookieValue Long userId,
+            @RequestHeader Long userId,
             @RequestBody @Valid CreateReservationDto.Request request
     ) {
         ReservationCommand command = new ReservationCommand(

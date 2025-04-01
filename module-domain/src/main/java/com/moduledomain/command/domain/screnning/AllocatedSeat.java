@@ -9,7 +9,7 @@ public class AllocatedSeat {
     private Long id;
     private Long seatId;
     private Long screeningId;
-    private Integer version;
+//    private Integer version;
     private boolean reserved;
 
     public void reserve() {

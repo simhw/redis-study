@@ -15,9 +15,9 @@ public class AllocatedSeatJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long seatId;
-    @Version
-    @ColumnDefault("0")
-    private Integer version;
+//    @Version
+//    @ColumnDefault("0")
+//    private Integer version;
     private Long screeningId;
     private Boolean reserved;
 
