@@ -42,32 +42,31 @@ public class ReservationService {
     private final TransactionTemplate transactionTemplate;
 
     public void reserve(ReservationCommand command) {
+        // 아직 시작하지 않은 상영인지 확인
+        Screening screening = screeningRepository.getScreeningBy(command.getScreeningId());
+        screening.verifyIsNotYetStart();
+
+        // 존재하는 회원인지 확인
+        User user = userRepository.getUserBy(command.getUserId());
+        user.validateActiveUser();
+
+        // 예약 객체 생성
+        Reservation reservation = new Reservation(
+                command.getUserId(),
+                command.getScreeningId(),
+                command.getAllocatedSeatIds().stream()
+                        .map(ReservedSeat::new)
+                        .toList(),
+                screening.getPrice()
+        );
+
         String[] keys = command.getAllocatedSeatIds().stream()
                 .map(String::valueOf)
                 .toArray(String[]::new);
-
         // 분산락 획득
         distributedLock.lockAndExecute(keys, 2, 3, TimeUnit.SECONDS, () -> {
-            // 예약 비즈니스 로직 실행
+            // 임계 영역 및 트랜잭션 시작
             transactionTemplate.execute(status -> {
-                Screening screening = screeningRepository.getScreeningBy(command.getScreeningId());
-
-                // 예약 객체 생성
-                Reservation reservation = new Reservation(
-                        command.getUserId(),
-                        command.getScreeningId(),
-                        command.getAllocatedSeatIds().stream()
-                                .map(ReservedSeat::new)
-                                .toList(),
-                        screening.getPrice()
-                );
-
-                // 아직 시작하지 않은 상영인지 확인
-                screening.verifyIsNotYetStart();
-
-                // 존재하는 회원인지 확인
-                User user = userRepository.getUserBy(command.getUserId());
-
                 // 예약되지 않은 좌석인지 확인
                 List<AllocatedSeat> allocatedSeats = screeningRepository.getAllocatedSeatsBy(command.getAllocatedSeatIds());
                 validateIsNotYetReservedSeat(allocatedSeats);

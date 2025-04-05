@@ -1,4 +1,4 @@
-# Rrdis Proejct
+# Redis Project
 
 ## 영화 예매 시스템
 
@@ -18,13 +18,6 @@
 
 - 외부 시스템과의 연결 담당하는 Repository 계층 포함
 - 도메인 모듈에서 사용하는 구체적인 구현체를 제공
-
-```mermaid
-graph TD
-    1[API 모듈] --> 2(도메인 모듈)
-    2 --> 3(인프라 모듈)
-    1 --> 3
-```
 
 ### 2. ERD
 
@@ -110,3 +103,11 @@ erDiagram
     USER ||--o{ RESERVATION: "makes"
 
 ```
+
+### 3. 인덱스 적용 및 분석
+
+[성능테스트보고서.md](docs%2F%EC%84%B1%EB%8A%A5%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%B3%B4%EA%B3%A0%EC%84%9C.md)
+
+### 4. 동시성 문제 해결
+
+[동시성테스트보고서.md](docs%2F%EB%8F%99%EC%8B%9C%EC%84%B1%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%B3%B4%EA%B3%A0%EC%84%9C.md)
