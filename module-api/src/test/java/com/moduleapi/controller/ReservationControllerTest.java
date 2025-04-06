@@ -20,6 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @SpringBootTest
 @Sql(scripts = "/data/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/data/test-cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -96,5 +98,22 @@ class ReservationControllerTest {
         List<Reservation> reservations = reservationRepository.getReservationsByScreeningId(1L);
         Assertions.assertThat(reservations).isNotNull();
         Assertions.assertThat(reservations.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("회원이 같은 상영을 중복 예약하는 경우 TooManyRequests 예외를 반환한다.")
+    void 영화_예매_중복_요청() throws InterruptedException {
+        Long userId = 1L;
+        List<Long> allocatedSeatIds1 = List.of(1L, 2L, 3L);
+        CreateReservationDto.Request request1 = new CreateReservationDto.Request(1L, allocatedSeatIds1);
+
+        List<Long> allocatedSeatIds2 = List.of(4L, 5L);
+        CreateReservationDto.Request request2 = new CreateReservationDto.Request(1L, allocatedSeatIds2);
+
+        // when, then
+        reservationController.create(userId, request1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            reservationController.create(userId, request2);
+        });
     }
 }

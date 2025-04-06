@@ -19,6 +19,17 @@
 - 외부 시스템과의 연결 담당하는 Repository 계층 포함
 - 도메인 모듈에서 사용하는 구체적인 구현체를 제공
 
+```
+[api]
+ ├── depends on: [domain], [infra], [common]
+[infra]
+ ├── depends on: [domain], [common]
+[domain]
+ ├── depends on: [common]
+[common]
+ └── ❌   
+```
+
 ### 2. ERD
 
 ```mermaid

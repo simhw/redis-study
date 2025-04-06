@@ -1,4 +1,4 @@
-package com.moduleinfra.aop;
+package com.modulecommon.support;
 
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;

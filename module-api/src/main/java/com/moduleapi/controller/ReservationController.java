@@ -1,6 +1,7 @@
 package com.moduleapi.controller;
 
 import com.moduleapi.dto.CreateReservationDto;
+import com.modulecommon.annotation.RateLimit;
 import com.moduledomain.command.service.ReservationCommand;
 import com.moduledomain.command.service.ReservationService;
 import jakarta.validation.Valid;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationController {
     private final ReservationService reservationService;
 
+    @RateLimit(
+            key = "'reservations:'.concat(#userId).concat(':').concat(#request.getScreeningId())",
+            ttl = 5,
+            count = 1
+    )
     @PostMapping
     public String create(
             @RequestHeader Long userId,

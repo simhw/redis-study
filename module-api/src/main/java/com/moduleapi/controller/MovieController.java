@@ -1,5 +1,6 @@
 package com.moduleapi.controller;
 
+import com.modulecommon.annotation.RateLimit;
 import com.moduleapi.dto.*;
 import com.moduledomain.query.application.ScreeningQueryService;
 import com.moduledomain.query.dto.FetchMovieCriteria;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -23,9 +25,14 @@ import java.util.stream.Collectors;
 public class MovieController {
     private final ScreeningQueryService screeningQueryService;
 
+    @RateLimit(
+            key = "'now-showing:'.concat(#ip)",
+            ttl = 1, timeUnit = TimeUnit.MINUTES,
+            count = 50
+    )
     @GetMapping("/now-showing")
     public ResponseEntity<List<GetMovieDto.Response>> getNowShowingMovies(
-            @Validated @ModelAttribute GetMovieDto.SearchCondition condition
+            @Validated @ModelAttribute GetMovieDto.SearchCondition condition, @RequestAttribute("client-ip") String ip
     ) {
         FetchMovieCriteria criteria = GetMovieDto.SearchCondition.from(condition);
         List<ScreeningInfo> infos = screeningQueryService.getActiveScreenings(criteria);

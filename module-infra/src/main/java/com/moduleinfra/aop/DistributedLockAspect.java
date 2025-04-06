@@ -1,5 +1,7 @@
 package com.moduleinfra.aop;
 
+import com.modulecommon.support.CustomSpringELParser;
+import com.moduledomain.command.service.DistributedLockAop;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,7 +20,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DistributedLockAop {
+public class DistributedLockAspect {
     private static final String REDISSON_LOCK_PREFIX = "LOCK:";
 
     private final RedissonClient redissonClient;
@@ -28,7 +30,7 @@ public class DistributedLockAop {
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        com.moduledomain.command.service.DistributedLockAop distributedLockAop = method.getAnnotation(com.moduledomain.command.service.DistributedLockAop.class);
+        DistributedLockAop distributedLockAop = method.getAnnotation(DistributedLockAop.class);
         String[] keys = distributedLockAop.keys();
 
         List<RLock> locks = Arrays.stream(keys)
