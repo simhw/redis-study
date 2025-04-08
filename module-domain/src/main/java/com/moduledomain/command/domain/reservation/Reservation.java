@@ -1,5 +1,7 @@
 package com.moduledomain.command.domain.reservation;
 
+import com.moduledomain.command.domain.reservation.exception.ReservationErrorType;
+import com.moduledomain.command.domain.reservation.exception.ReservationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -29,21 +31,9 @@ public class Reservation {
     }
 
     private void setReservedSeats(List<ReservedSeat> reservedSeats) {
-        validateLeastSeat(reservedSeats);
-        validateMaximumSeat(reservedSeats);
-        this.reservedSeats = reservedSeats;
-    }
-
-    private void validateLeastSeat(List<ReservedSeat> reservedSeats) {
-        if (reservedSeats.isEmpty()) {
-            throw new IllegalArgumentException("한 자리 이상 예약 가능합니다.");
-        }
-    }
-
-    private void validateMaximumSeat(List<ReservedSeat> reservedSeats) {
-        if (reservedSeats.size() > 5) {
-            throw new IllegalArgumentException("최대 다섯 자리까지 예약 가능합니다.");
-        }
+        if (reservedSeats == null) {
+            throw new ReservationException(ReservationErrorType.RESERVATION_NOT_FOUND);
+        } this.reservedSeats = reservedSeats;
     }
 
     /**

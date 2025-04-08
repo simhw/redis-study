@@ -1,4 +1,4 @@
-package com.moduleinfra.aop;
+package com.moduleinfra.support;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;

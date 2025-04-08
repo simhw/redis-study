@@ -1,4 +1,4 @@
-package com.moduledomain.command.service;
+package com.modulecommon.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DistributedLockAop {
+public @interface DistributedLock {
     /**
      * 락의 이름
      */

@@ -1,6 +1,6 @@
 package com.moduleinfra.support;
 
-import com.moduledomain.command.service.DistributedLock;
+import com.modulecommon.support.IDistributedLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DistributedLockImpl implements DistributedLock {
+public class DistributedLockImpl implements IDistributedLock {
     private final RedissonClient redissonClient;
     private final String REDISSON_LOCK_PREFIX = "LOCK:";
 

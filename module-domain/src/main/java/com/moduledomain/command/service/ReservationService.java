@@ -1,10 +1,13 @@
 package com.moduledomain.command.service;
 
+import com.modulecommon.support.IDistributedLock;
 import com.moduledomain.command.domain.reservation.Reservation;
 import com.moduledomain.command.domain.reservation.ReservationRepository;
 
 import com.moduledomain.command.domain.reservation.ReservedEvent;
 import com.moduledomain.command.domain.reservation.ReservedSeat;
+import com.moduledomain.command.domain.reservation.exception.ReservationErrorType;
+import com.moduledomain.command.domain.reservation.exception.ReservationException;
 import com.moduledomain.command.domain.screnning.AllocatedSeat;
 import com.moduledomain.command.domain.screnning.Screening;
 import com.moduledomain.command.domain.screnning.ScreeningRepository;
@@ -38,7 +41,7 @@ public class ReservationService {
     private final SeatRepository seatRepository;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final DistributedLock distributedLock;
+    private final IDistributedLock iDistributedLock;
     private final TransactionTemplate transactionTemplate;
 
     public void reserve(ReservationCommand command) {
@@ -63,8 +66,9 @@ public class ReservationService {
         String[] keys = command.getAllocatedSeatIds().stream()
                 .map(String::valueOf)
                 .toArray(String[]::new);
+
         // 분산락 획득
-        distributedLock.lockAndExecute(keys, 2, 3, TimeUnit.SECONDS, () -> {
+        iDistributedLock.lockAndExecute(keys, 2, 3, TimeUnit.SECONDS, () -> {
             // 임계 영역 및 트랜잭션 시작
             transactionTemplate.execute(status -> {
                 // 예약되지 않은 좌석인지 확인
@@ -99,7 +103,7 @@ public class ReservationService {
         boolean reserved = allocatedSeats.stream()
                 .anyMatch(AllocatedSeat::isReserved);
         if (reserved) {
-            throw new IllegalArgumentException("이미 예약된 좌석입니다.");
+            throw new ReservationException(ReservationErrorType.ALREADY_RESERVED_SEAT);
         }
     }
 
@@ -116,7 +120,7 @@ public class ReservationService {
 
         for (int i = 1; i < sortedSeatNos.size(); i++) {
             if (!sortedSeatNos.get(i - 1).isNextTo(sortedSeatNos.get(i))) {
-                throw new IllegalArgumentException("연속된 좌석이 아닙니다.");
+                throw new ReservationException(ReservationErrorType.NOT_ADJACENT_SEATS);
             }
         }
     }

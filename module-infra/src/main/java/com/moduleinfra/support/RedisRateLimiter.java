@@ -1,8 +1,9 @@
-package com.moduleinfra.aop;
+package com.moduleinfra.support;
 
-import com.modulecommon.TooManyRequests;
 import com.modulecommon.annotation.RateLimit;
 import com.modulecommon.support.RateLimiter;
+import com.moduleinfra.exception.SystemErrorType;
+import com.moduleinfra.exception.SystemException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -29,7 +30,7 @@ public class RedisRateLimiter implements RateLimiter {
         // 차단 확인
         RBucket<Boolean> block = redissonClient.getBucket(BLOCK_KEY + key.toString());
         if (block.isExists()) {
-            throw new TooManyRequests();
+            throw new SystemException(SystemErrorType.TOO_MANY_REQUEST, rateLimit.count());
         }
 
         RRateLimiter rateLimiter = redissonClient.getRateLimiter(key.toString());
@@ -42,9 +43,8 @@ public class RedisRateLimiter implements RateLimiter {
         if (!allowed) {
             // 1시간 차단 설정
             block.set(true, 1, TimeUnit.HOURS);
-            throw new TooManyRequests();
+            throw new SystemException(SystemErrorType.REQUEST_BLOCKED, rateLimit.count());
         }
-
         try {
             joinPoint.proceed();
 

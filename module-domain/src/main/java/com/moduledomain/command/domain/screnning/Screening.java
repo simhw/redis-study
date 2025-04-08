@@ -1,5 +1,7 @@
 package com.moduledomain.command.domain.screnning;
 
+import com.moduledomain.command.domain.screnning.exception.ScreeningErrorType;
+import com.moduledomain.command.domain.screnning.exception.ScreeningException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +29,7 @@ public class Screening {
 
     public void verifyIsNotYetStart() {
         if (this.startAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("이미 상영이 시작되었습니다.");
+            throw new ScreeningException(ScreeningErrorType.ALREADY_RESERVED_SCREENING, this);
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.moduledomain.command.domain.user;
 
+import com.moduledomain.command.domain.user.excepiton.UserErrorType;
+import com.moduledomain.command.domain.user.excepiton.UserException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,7 +22,7 @@ public class User {
 
     public void validateActiveUser() {
         if (this.deletedAt != null) {
-            throw new IllegalArgumentException("유효하지 않은 회원입니다.");
+            throw new UserException(UserErrorType.INVALID_USER, this.id);
         }
     }
 }
