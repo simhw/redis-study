@@ -4,7 +4,7 @@
 
 ### 1. 멀티 모듈
 
-#### 1. API 모듈(module-module)
+#### 1. API 모듈(api-module)
 
 - 클라이언트와 직접 통신하는 Controller 계층 포함
 - 요청을 받아 도메인 계층에 위임하고 응답을 반환
@@ -18,6 +18,11 @@
 
 - 외부 시스템과의 연결 담당하는 Repository 계층 포함
 - 도메인 모듈에서 사용하는 구체적인 구현체를 제공
+
+#### 4. 공통 모듈(common-module)
+
+- 모든 모듈에서 공통적으로 사용하는 유틸리티성 코드
+- eg. 어노테이션, 공통 예외 처리, 공통 상수 등
 
 ```
 [api]
@@ -122,3 +127,6 @@ erDiagram
 ### 4. 동시성 문제 해결
 
 [동시성테스트보고서.md](docs%2F%EB%8F%99%EC%8B%9C%EC%84%B1%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%B3%B4%EA%B3%A0%EC%84%9C.md)
+
+### 5. RateLimit 적용 
+https://velog.io/@simhw/Rate-Limit-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0with.-Redis
