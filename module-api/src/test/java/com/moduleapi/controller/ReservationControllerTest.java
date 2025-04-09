@@ -4,6 +4,7 @@ import com.moduleapi.dto.CreateReservationDto;
 import com.moduledomain.command.domain.reservation.Reservation;
 import com.moduledomain.command.domain.screnning.*;
 
+import com.moduleinfra.exception.SystemException;
 import com.moduleinfra.repository.reservation.ReservationRepositoryImpl;
 import com.moduleinfra.repository.screening.ScreeningRepositoryImpl;
 import org.assertj.core.api.Assertions;
@@ -26,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Sql(scripts = "/data/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/data/test-cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class ReservationControllerTest {
-
     @Autowired
     ReservationController reservationController;
 
@@ -51,9 +51,8 @@ class ReservationControllerTest {
         Assertions.assertThat(reservation).isNotNull();
 
         List<AllocatedSeat> allocatedSeats = screeningRepository.getAllocatedSeatsBy(allocatedSeatIds);
-        allocatedSeats.forEach(allocatedSeat -> {
-            Assertions.assertThat(allocatedSeat.isReserved()).isTrue();
-        });
+        allocatedSeats.forEach(allocatedSeat ->
+                Assertions.assertThat(allocatedSeat.isReserved()).isTrue());
     }
 
     @Test
@@ -101,19 +100,23 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("회원이 같은 상영을 중복 예약하는 경우 TooManyRequests 예외를 반환한다.")
-    void 영화_예매_중복_요청() throws InterruptedException {
+    @DisplayName("회원이 같은 상영을 중복 예약하는 경우 SystemException 예외를 반환한다.")
+    void 영화_예매_중복_요청() {
+        // given
         Long userId = 1L;
         List<Long> allocatedSeatIds1 = List.of(1L, 2L, 3L);
-        CreateReservationDto.Request request1 = new CreateReservationDto.Request(1L, allocatedSeatIds1);
-
         List<Long> allocatedSeatIds2 = List.of(4L, 5L);
+
+        CreateReservationDto.Request request1 = new CreateReservationDto.Request(1L, allocatedSeatIds1);
         CreateReservationDto.Request request2 = new CreateReservationDto.Request(1L, allocatedSeatIds2);
 
-        // when, then
+        // when
+        // 첫 요청은 성공
         reservationController.create(userId, request1);
-        assertThrows(IllegalArgumentException.class, () -> {
-            reservationController.create(userId, request2);
-        });
+
+        // then
+        // then: 두 번째 요청은 예외 발생
+        assertThrows(SystemException.class,
+                () -> reservationController.create(userId, request2));
     }
 }

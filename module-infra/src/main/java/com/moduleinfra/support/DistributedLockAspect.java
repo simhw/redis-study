@@ -1,6 +1,6 @@
 package com.moduleinfra.support;
 
-import com.modulecommon.support.CustomSpringELParser;
+import com.modulecommon.support.CustomSpELParser;
 import com.modulecommon.annotation.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class DistributedLockAspect {
         String[] keys = distributedLock.keys();
 
         List<RLock> locks = Arrays.stream(keys)
-                .map(key -> REDISSON_LOCK_PREFIX + CustomSpringELParser.getDynamicValue(
+                .map(key -> REDISSON_LOCK_PREFIX + CustomSpELParser.getDynamicValue(
                         signature.getParameterNames(),
                         joinPoint.getArgs(),
                         key

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -25,10 +24,11 @@ import java.util.stream.Collectors;
 public class MovieController {
     private final ScreeningQueryService screeningQueryService;
 
+    // ip별로 1시간 동안 50회 요청 가능
     @RateLimit(
-            key = "'now-showing:'.concat(#ip)",
-            ttl = 1, timeUnit = TimeUnit.MINUTES,
-            count = 50
+            key = "'now-showing:' + #ip",
+            limitCount = 50,
+            limitTimeSecond = 3600  // 60 * 60 = 1시간
     )
     @GetMapping("/now-showing")
     public ResponseEntity<List<GetMovieDto.Response>> getNowShowingMovies(

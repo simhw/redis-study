@@ -4,13 +4,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.concurrent.TimeUnit;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RateLimit {
     /**
-     * 분당 호출 제한시킬 unique key
+     * 호출을 제한시킬 unique key
      * eg. ip
      */
     String key() default "";
@@ -18,12 +17,10 @@ public @interface RateLimit {
     /**
      * 호출 제한 시간
      */
-    long ttl() default 1;
-
-    TimeUnit timeUnit() default TimeUnit.MINUTES;
+    long limitTimeSecond() default 1;
 
     /**
-     * 호출 제한 카운트
+     * 호출 제한 개수
      */
-    long count();
+    long limitCount();
 }

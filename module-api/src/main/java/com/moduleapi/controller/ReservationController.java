@@ -15,9 +15,9 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @RateLimit(
-            key = "'reservations:'.concat(#userId).concat(':').concat(#request.getScreeningId())",
-            ttl = 5,
-            count = 1
+            key = "'reserve:' + #userId + ':' + #request.screeningId",
+            limitCount = 1,
+            limitTimeSecond = 300 // 5 * 60 = 5분
     )
     @PostMapping
     public String create(
